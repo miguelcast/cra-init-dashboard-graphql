@@ -1,4 +1,10 @@
-export const nextNumber = (next = 1) => () => next + 1;
+export const nextNumber = (next = 1) => {
+  let n = next;
+  return () => {
+    n += 1;
+    return n;
+  };
+};
 
 const nextRouteIndex = nextNumber();
 export const createRoute = (url, component, when = null, exact = false) => ({
