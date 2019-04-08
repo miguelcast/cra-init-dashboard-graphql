@@ -1,3 +1,3 @@
-node_modules
-build
-public
+/backend-example
+/packages/dashboard/public/polyfill.min.js
+/packages/dashboard/src/registerServiceWorker.js
