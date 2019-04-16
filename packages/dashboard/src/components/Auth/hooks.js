@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
-import store from '../../config/store';
+import { observableLoggedIn } from '../../config/client';
 
 export function useAuthenticated() {
-  const [auth, setAuth] = useState(store.getState().auth);
+  const { data } = observableLoggedIn.getCurrentResult();
+
+  const [auth, setAuth] = useState({
+    isAuthenticated: data.isLoggedIn,
+  });
 
   useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      const newAuth = store.getState().auth;
-      if (auth !== newAuth) {
-        setAuth(newAuth);
-      }
+    const subscribed = observableLoggedIn.subscribe({
+      next: ({ data: { isLoggedIn } }) =>
+        setAuth({ isAuthenticated: isLoggedIn }),
     });
-    return unsubscribe;
-  }, [auth]);
-  return { ...(auth || {}) };
+    return () => subscribed._cleanup();
+  }, []);
+
+  return { ...(auth || { isAuthenticated: false }) };
 }

@@ -1,9 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
-import axios from 'axios';
 import moment from 'moment';
-import instance from '../../services/instance';
+import client from '../../config/client';
 import { sortNumber, sortString, sortBool } from '../../utils/general';
 import SearchTableFilter from './SearchTableFilter';
 import DateTableFilter from './DateTableFilter';
@@ -140,8 +139,8 @@ export function useCrudList(conf) {
 
   useEffect(() => {
     setLoading(true);
-    instance
-      .get(conf.getList)
+    client
+      .query({ query: conf.getList })
       .then(response => {
         setLoading(false);
         setDataSource(response.data);
@@ -154,8 +153,8 @@ export function useCrudList(conf) {
 
   const onDelete = key => {
     setLoading(true);
-    instance
-      .delete(conf.delete, { params: { [conf.keyName]: key } })
+    client
+      .query({ query: conf.delete, variables: { [conf.keyName]: key } })
       .then(response => {
         setLoading(false);
       })
@@ -193,17 +192,20 @@ export function useCrudForm(conf, key) {
             typeof field.configOptions.url === 'string'
           ) {
             const { url, method = 'get' } = field.configOptions;
-            promises.all.push(instance[method](url));
+            promises.all.push(client[method](url));
             promises.keys[field.key] = i;
             i += 1;
           }
         });
 
-        const responses = await axios.all(promises.all);
+        const responses = await client.query({ query: '' });
 
         if (key) {
-          const response = await instance.get(`${conf.getByKey}/${key}`, {
-            params: { [conf.keyName || 'key']: key },
+          const response = await client.query({
+            query: `${conf.getByKey}/${key}`,
+            variables: {
+              [conf.keyName || 'key']: key,
+            },
           });
           fields.forEach(field => {
             if (response.data[field.key]) {
@@ -251,8 +253,11 @@ export function useCrudForm(conf, key) {
 
   const onSubmit = values => {
     setLoading(true);
-    instance
-      .post(conf.post, { ...values, [conf.keyName || 'key']: key || undefined })
+    client
+      .query({
+        query: conf.post,
+        variables: { ...values, [conf.keyName || 'key']: key || undefined },
+      })
       .then(response => {
         setLoading(false);
       })

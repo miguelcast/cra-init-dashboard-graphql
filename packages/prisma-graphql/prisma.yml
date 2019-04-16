@@ -1,0 +1,12 @@
+endpoint: http://localhost:4466/cra-init-dashboard-graphql/dev
+datamodel: datamodel.prisma
+
+generate:
+  - generator: javascript-client
+    output: ../graphql-server/prisma-client/
+
+hooks:
+  post-deploy:
+    - prisma generate
+
+secret: cra-init-dashboard-graphql-prisma

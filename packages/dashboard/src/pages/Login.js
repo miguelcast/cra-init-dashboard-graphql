@@ -1,19 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { Mutation } from 'react-apollo';
 import { Login as LoginForm } from '../components/Auth';
+import { LOGIN } from '../graphql';
 
-const Login = props => <LoginForm {...props} />;
+const Login = () => (
+  <Mutation mutation={LOGIN}>
+    {authentication => {
+      const submitLogin = (email, password) =>
+        authentication({ variables: { email, password } });
+      return <LoginForm loading={false} authentication={submitLogin} />;
+    }}
+  </Mutation>
+);
 
-const mapState = state => ({
-  loading: state.loading.effects.auth.authentication,
-});
-
-const mapDispatch = dispatch => ({
-  authentication: (username, password) =>
-    dispatch.auth.authentication({ username, password }),
-});
-
-export default connect(
-  mapState,
-  mapDispatch
-)(Login);
+export default Login;

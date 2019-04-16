@@ -1,0 +1,23 @@
+{
+  "name": "@miguelcast/server",
+  "version": "1.0.0",
+  "description": "server graphql prisma apollo",
+  "main": "index.js",
+  "author": "miguelcast",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@graphql-modules/core": "^0.7.0",
+    "@graphql-modules/sonar": "^0.4.0",
+    "apollo-server": "^2.4.8",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^7.0.0",
+    "graphql": "^14.2.1",
+    "graphql-tools": "^4.0.4",
+    "jsonwebtoken": "^8.5.1",
+    "prisma-client-lib": "^1.30.0"
+  },
+  "scripts": {
+    "dev": "node index.js"
+  }
+}

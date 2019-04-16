@@ -43,7 +43,8 @@
     "test": "jest --config jest.config.js --detectOpenHandles",
     "new-version": "lerna version --conventional-commits --yes",
     "diff": "lerna diff",
-    "start": "lerna exec --scope @miguelcast/dashboard -- yarn start"
+    "start:web": "lerna exec --scope @miguelcast/dashboard -- yarn start",
+    "start:server": "lerna exec --scope @miguelcast/server -- yarn dev"
   },
   "husky": {
     "hooks": {

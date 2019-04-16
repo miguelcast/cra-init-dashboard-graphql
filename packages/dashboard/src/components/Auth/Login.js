@@ -13,7 +13,7 @@ function Login(props) {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        props.authentication(values.userName, values.password);
+        props.authentication(values.email, values.password);
       }
     });
   };
@@ -22,7 +22,7 @@ function Login(props) {
     <Form onSubmit={handleSubmit} className="custom-form-login">
       <Title text={t('login.title')} />
       <Form.Item>
-        {getFieldDecorator('userName', {
+        {getFieldDecorator('email', {
           rules: [
             { required: true, message: t('common.usernameRequired') },
             { type: 'email', message: t('common.invalidEmail') },

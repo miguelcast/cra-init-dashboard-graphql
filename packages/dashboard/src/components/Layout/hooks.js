@@ -6,7 +6,6 @@ import myMenus from '../../config/menus';
 export function useMenu(position) {
   const { isAuthenticated } = useAuthenticated();
   const [menus, setMenus] = useState(myMenus[position]);
-
   useEffect(() => {
     setMenus(
       myMenus[position].filter(

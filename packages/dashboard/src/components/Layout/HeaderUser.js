@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, Dropdown, Menu, Icon } from 'antd';
-import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 const MenuDrop = ({ logout }) => {
@@ -26,7 +25,9 @@ const HeaderUser = ({ logout, user }) => (
   >
     <div className="custom-header-user">
       <Avatar icon="user" />
-      <span style={{ paddingLeft: 8 }}>{user.name || user.username}</span>
+      {user && (
+        <span style={{ paddingLeft: 8 }}>{user.name || user.username}</span>
+      )}
     </div>
   </Dropdown>
 );
@@ -38,9 +39,4 @@ HeaderUser.propTypes = {
 
 HeaderUser.displayName = 'HeaderUser';
 
-export default connect(
-  state => ({ user: state.auth.user }),
-  dispatch => ({
-    logout: () => dispatch.auth.logout(),
-  })
-)(HeaderUser);
+export default HeaderUser;

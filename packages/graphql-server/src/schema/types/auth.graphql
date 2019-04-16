@@ -1,0 +1,13 @@
+extend type Query {
+  currentUser: User
+}
+
+type Mutation {
+  signup(name: String!, email: String!, password: String!): LoginResponse!
+  login(email: String!, password: String!): LoginResponse!
+}
+
+type LoginResponse {
+  token: String
+  user: User
+}

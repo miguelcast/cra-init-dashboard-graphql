@@ -1,0 +1,14 @@
+directive @isAuthenticated on FIELD_DEFINITION
+
+type Query {
+  user(userId: ID!): User
+  users: [User!]! @isAuthenticated
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  status: Boolean @isAuthenticated
+}

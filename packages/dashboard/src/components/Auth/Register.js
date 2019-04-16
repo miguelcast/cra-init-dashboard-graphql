@@ -2,6 +2,7 @@ import { Button, Form, Icon, Input } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuthenticated } from './hooks';
 import { Title } from '../Shared';
 
 const formShape = {
@@ -14,6 +15,8 @@ function Register(props) {
     form: { getFieldDecorator },
   } = props;
   const { t } = useTranslation();
+  const auth = useAuthenticated();
+  console.log(auth);
 
   const handleSubmit = e => {
     e.preventDefault();
