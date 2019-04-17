@@ -132,6 +132,27 @@ const validateDependency = (
   }
 };
 
+const setValueByType = (data, field) => {
+  const fieldData =
+    typeof data === 'object' && Object.hasOwnProperty.call(data, 'id')
+      ? data.id
+      : data;
+
+  switch (field.type) {
+    case 'date': {
+      return moment(fieldData);
+    }
+    case 'number':
+    case 'radio':
+    case 'bool': {
+      return fieldData;
+    }
+    default: {
+      return fieldData.toString();
+    }
+  }
+};
+
 export function useCrudList(conf) {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -140,10 +161,10 @@ export function useCrudList(conf) {
   useEffect(() => {
     setLoading(true);
     client
-      .query({ query: conf.getList })
+      .query({ query: conf.getList.query })
       .then(response => {
         setLoading(false);
-        setDataSource(response.data);
+        setDataSource(response.data[conf.getList.accessData]);
       })
       .catch(e => {
         setLoading(false);
@@ -189,32 +210,32 @@ export function useCrudForm(conf, key) {
         fields.forEach(field => {
           if (
             field.configOptions &&
-            typeof field.configOptions.url === 'string'
+            typeof field.configOptions.query === 'object'
           ) {
-            const { url, method = 'get' } = field.configOptions;
-            promises.all.push(client[method](url));
+            const { query } = field.configOptions;
+            promises.all.push(client.query({ query }));
             promises.keys[field.key] = i;
             i += 1;
           }
         });
 
-        const responses = await client.query({ query: '' });
+        const responses = await Promise.all(promises.all);
 
         if (key) {
-          const response = await client.query({
-            query: `${conf.getByKey}/${key}`,
+          const { data } = await client.query({
+            query: conf.getByKey.query,
             variables: {
               [conf.keyName || 'key']: key,
             },
           });
           fields.forEach(field => {
-            if (response.data[field.key]) {
+            if (data[conf.getByKey.accessData][field.key]) {
               valuesFields[field.key] = {
-                ...validateDependency(field, response.data),
-                value:
-                  field.type === 'date'
-                    ? moment(response.data[field.key])
-                    : response.data[field.key].toString(),
+                ...validateDependency(field, data[conf.getByKey.accessData]),
+                value: setValueByType(
+                  data[conf.getByKey.accessData][field.key],
+                  field
+                ),
               };
             }
           });
@@ -225,7 +246,9 @@ export function useCrudForm(conf, key) {
             const options =
               promises.keys[field.key] >= 0
                 ? (responses[promises.keys[field.key]] &&
-                    responses[promises.keys[field.key]].data.reduce(
+                    responses[promises.keys[field.key]].data[
+                      field.configOptions.accessData
+                    ].reduce(
                       (items, item) => ({
                         ...items,
                         ...field.configOptions.map(item),
@@ -254,11 +277,16 @@ export function useCrudForm(conf, key) {
   const onSubmit = values => {
     setLoading(true);
     client
-      .query({
-        query: conf.post,
+      .mutate({
+        mutation: conf.post.query,
         variables: { ...values, [conf.keyName || 'key']: key || undefined },
+        refetchQueries: [
+          { query: conf.getList.query },
+          { query: conf.getByKey.query },
+        ],
       })
       .then(response => {
+        console.log('onSubmitHook', response);
         setLoading(false);
       })
       .catch(err => {

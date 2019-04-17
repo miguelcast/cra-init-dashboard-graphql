@@ -3,7 +3,18 @@ extend type Query {
 }
 
 type Mutation {
-  signup(name: String!, email: String!, password: String!): LoginResponse!
+  signup(
+    id: ID,
+    name: String!,
+    email: String!,
+    password: String!,
+    age: Int,
+    gender: String,
+    address: String,
+    color: String,
+    country: ID,
+    status: Boolean
+  ): LoginResponse!
   login(email: String!, password: String!): LoginResponse!
 }
 

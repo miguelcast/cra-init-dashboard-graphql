@@ -1,7 +1,7 @@
 directive @isAuthenticated on FIELD_DEFINITION
 
 type Query {
-  user(userId: ID!): User
+  user(id: ID!): User
   users: [User!]! @isAuthenticated
 }
 
@@ -9,6 +9,12 @@ type User {
   id: ID!
   name: String!
   email: String!
-  password: String!
-  status: Boolean @isAuthenticated
+  password: String! @isAuthenticated
+  age: Int
+  address: String
+  color: String
+  country: Country
+  gender: String
+  birthday: String
+  status: Boolean
 }

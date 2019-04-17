@@ -21,7 +21,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
+const errorLink = onError(({ networkError = {} }) => {
   if (networkError.statusCode === 401) {
     console.log('Error 401');
   }

@@ -1,8 +1,74 @@
+import gql from 'graphql-tag';
+
+const fields = `
+  id
+  name
+  email
+  password
+  age
+  address
+  color
+  country {
+    id
+    name
+  }
+  gender
+  birthday
+  status
+`;
+
 const user = {
-  keyName: 'key',
-  getList: '/users',
-  getByKey: '/user',
-  post: '/postUser.json',
+  keyName: 'id',
+  getList: {
+    accessData: 'users',
+    query: gql`
+      query Users {
+        users {
+          ${fields}
+        }
+      }
+    `,
+  },
+  getByKey: {
+    accessData: 'user',
+    query: gql`
+      query User($id: ID!) {
+        user(id: $id) {
+          ${fields}
+        }
+      }
+    `,
+  },
+  post: {
+    accessData: 'signup',
+    query: gql`
+      mutation Signup(
+        $id: ID
+        $name: String!
+        $email: String!
+        $password: String!
+        $age: Int
+        $color: String
+        $country: ID
+        $status: Boolean
+      ) {
+        signup(
+          id: $id
+          name: $name
+          email: $email
+          password: $password
+          age: $age
+          color: $color
+          country: $country
+          status: $status
+        ) {
+          user {
+            ${fields}
+          }
+        }
+      }
+    `,
+  },
   delete: '/deleteUser.json',
   fields: [
     {
@@ -16,6 +82,31 @@ const user = {
         { required: true, message: 'Is required!' },
         { type: 'string', message: 'Should be string!' },
         { max: 50, message: 'Max 50 characters!' },
+      ],
+    },
+    {
+      title: 'Email',
+      key: 'email',
+      sorter: true,
+      filter: true,
+      type: 'string',
+      rules: [
+        { required: true, message: 'Is required!' },
+        { type: 'string', message: 'Should be string!' },
+        { type: 'email', message: 'Should be email!' },
+        { max: 150, message: 'Max 150 characters!' },
+      ],
+    },
+    {
+      title: 'Password',
+      key: 'password',
+      sorter: true,
+      filter: true,
+      type: 'password',
+      rules: [
+        { required: true, message: 'Is required!' },
+        { type: 'string', message: 'Should be string!' },
+        { min: 6, message: 'Min 6 characters!' },
       ],
     },
     {
@@ -65,11 +156,16 @@ const user = {
       type: 'select',
       options: {},
       configOptions: {
-        url: '/countries',
-        // { key: text }, mapper with loaded data
-        map: item => ({ [item.key]: item.name }),
-        // default get, you can use get or post;
-        method: 'get',
+        accessData: 'countries',
+        query: gql`
+          query {
+            countries {
+              id
+              name
+            }
+          }
+        `,
+        map: item => ({ [item.id]: item.name }),
       },
       dependencies: {
         fields: ['color'],

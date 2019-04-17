@@ -3,13 +3,17 @@ type User {
   name: String!
   email: String! @unique
   password: String!
+  age: Int
+  address: String
+  color: String
+  country: Country
+  gender: String
+  birthday: DateTime
   status: Boolean @default(value: "true")
 }
 
-type Menu {
+type Country {
   id: ID! @unique
-  url: String!
-  title: String!
-  icon: String
-  authorization: String
+  name: String!
+  users: [User]
 }

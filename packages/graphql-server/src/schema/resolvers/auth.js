@@ -10,13 +10,52 @@ const auth = {
     },
   },
   Mutation: {
-    signup: async (root, { name, email, password }, { prisma }) => {
+    signup: async (
+      root,
+      {
+        id,
+        name,
+        email,
+        password,
+        age,
+        color,
+        country,
+        gender,
+        address,
+        status,
+      },
+      { prisma }
+    ) => {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = prisma.createUser({
+      const dataUser = {
         name,
         email,
         password: hashedPassword,
+        age,
+        color,
+        gender,
+        address,
+        status,
+        country: {
+          connect: {
+            id: country,
+          },
+        },
+      };
+
+      const user = await prisma.upsertUser({
+        where: {
+          id,
+        },
+        update: {
+          ...dataUser,
+        },
+        create: {
+          ...dataUser,
+        },
       });
+
+      console.log('console.log', user);
 
       const token = getToken(user);
 

@@ -58,6 +58,12 @@ const getForm = (field, getFieldDecorator) => {
         </Select>
       );
     }
+    case 'password': {
+      return getFieldDecorator(field.key, {
+        ...globalOptions,
+        rules: field.rules,
+      })(<Input.Password disabled={field.disabled || false} />);
+    }
     default:
     case 'string': {
       return getFieldDecorator(field.key, {
