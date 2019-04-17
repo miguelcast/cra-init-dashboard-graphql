@@ -27,19 +27,49 @@ const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
   }
 });
 
+const setAuth = (auth, cache) => {
+  const userString = JSON.stringify(auth.user);
+  localStorage.setItem('token', auth.token);
+  localStorage.setItem('currentUser', userString);
+  cache.writeData({
+    data: {
+      userLogged: {
+        isLoggedIn: !!auth.token,
+        currentUser: userString,
+        __typename: 'UserLogged',
+      },
+    },
+  });
+  return null;
+};
+
 const resolvers = {
   Query: {
-    isLoggedIn() {
-      const token = localStorage.getItem('token');
-      return !!token;
+    userLogged() {
+      return {
+        isLoggedIn: !!localStorage.getItem('token'),
+        currentUser: JSON.parse(localStorage.getItem('currentUser')),
+      };
     },
   },
   Mutation: {
     login({ login }, args, { cache }) {
-      localStorage.setItem('token', login.token);
-      localStorage.setItem('currentUser', login.user);
+      setAuth(login, cache);
+    },
+    signup({ signup }, args, { cache }) {
+      setAuth(signup, cache);
+    },
+    logout(root, args, { cache }) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
       cache.writeData({
-        data: { isLoggedIn: !!login.token, currentUser: login.user },
+        data: {
+          userLogged: {
+            isLoggedIn: false,
+            currentUser: null,
+            __typename: 'UserLogged',
+          },
+        },
       });
       return null;
     },
@@ -54,8 +84,11 @@ const client = new ApolloClient({
 
 store.writeData({
   data: {
-    isLoggedIn: !!localStorage.getItem('token'),
-    currentUser: localStorage.getItem('currentUser'),
+    userLogged: {
+      isLoggedIn: !!localStorage.getItem('token'),
+      currentUser: localStorage.getItem('currentUser'),
+      __typename: 'UserLogged',
+    },
   },
 });
 

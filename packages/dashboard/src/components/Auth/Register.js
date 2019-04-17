@@ -2,7 +2,6 @@ import { Button, Form, Icon, Input } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthenticated } from './hooks';
 import { Title } from '../Shared';
 
 const formShape = {
@@ -12,17 +11,17 @@ const formShape = {
 
 function Register(props) {
   const {
+    submit,
+    loading = false,
     form: { getFieldDecorator },
   } = props;
   const { t } = useTranslation();
-  const auth = useAuthenticated();
-  console.log(auth);
 
   const handleSubmit = e => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        submit(values.name, values.email, values.password);
       }
     });
   };
@@ -31,7 +30,18 @@ function Register(props) {
     <Form onSubmit={handleSubmit} className="custom-form-register">
       <Title text={t('register.title')} />
       <Form.Item>
-        {getFieldDecorator('userName', {
+        {getFieldDecorator('name', {
+          rules: [{ required: true, message: t('register.nameRequired') }],
+        })(
+          <Input
+            prefix={<Icon type="user" className="custom-prefix-icon" />}
+            placeholder={t('register.name')}
+            size="large"
+          />
+        )}
+      </Form.Item>
+      <Form.Item>
+        {getFieldDecorator('email', {
           rules: [
             { required: true, message: t('common.usernameRequired') },
             { type: 'email', message: t('common.invalidEmail') },
@@ -40,17 +50,6 @@ function Register(props) {
           <Input
             prefix={<Icon type="mail" className="custom-prefix-icon" />}
             placeholder={t('common.email')}
-            size="large"
-          />
-        )}
-      </Form.Item>
-      <Form.Item>
-        {getFieldDecorator('name', {
-          rules: [{ required: true, message: t('register.nameRequired') }],
-        })(
-          <Input
-            prefix={<Icon type="user" className="custom-prefix-icon" />}
-            placeholder={t('register.name')}
             size="large"
           />
         )}
@@ -73,6 +72,7 @@ function Register(props) {
           type="primary"
           size="large"
           htmlType="submit"
+          loading={loading}
         >
           {t('register.signIn')}
         </Button>
@@ -82,6 +82,8 @@ function Register(props) {
 }
 
 Register.propTypes = {
+  submit: PropTypes.func,
+  loading: PropTypes.bool,
   form: PropTypes.shape(formShape).isRequired,
 };
 

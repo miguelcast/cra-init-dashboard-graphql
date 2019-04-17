@@ -5,13 +5,13 @@ export function useAuthenticated() {
   const { data } = observableLoggedIn.getCurrentResult();
 
   const [auth, setAuth] = useState({
-    isAuthenticated: data.isLoggedIn,
+    isAuthenticated: data.userLogged.isLoggedIn || false,
   });
 
   useEffect(() => {
     const subscribed = observableLoggedIn.subscribe({
-      next: ({ data: { isLoggedIn } }) =>
-        setAuth({ isAuthenticated: isLoggedIn }),
+      next: ({ data: { userLogged } }) =>
+        setAuth({ isAuthenticated: userLogged.isLoggedIn }),
     });
     return () => subscribed._cleanup();
   }, []);

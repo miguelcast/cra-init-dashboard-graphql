@@ -5,10 +5,10 @@ import { LOGIN } from '../graphql';
 
 const Login = () => (
   <Mutation mutation={LOGIN}>
-    {authentication => {
+    {(authentication, { loading }) => {
       const submitLogin = (email, password) =>
         authentication({ variables: { email, password } });
-      return <LoginForm loading={false} authentication={submitLogin} />;
+      return <LoginForm loading={loading} authentication={submitLogin} />;
     }}
   </Mutation>
 );
