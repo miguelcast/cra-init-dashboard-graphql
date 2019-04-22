@@ -160,6 +160,15 @@ export function useCrudList(conf) {
 
   useEffect(() => {
     setLoading(true);
+
+    const subscribed = client
+      .watchQuery({ query: conf.getList.query })
+      .subscribe({
+        next({ data: { users = [] } }) {
+          setDataSource(users);
+        },
+      });
+
     client
       .query({ query: conf.getList.query })
       .then(response => {
@@ -170,14 +179,31 @@ export function useCrudList(conf) {
         setLoading(false);
         console.log(e);
       });
+
+    return () => subscribed._cleanup();
   }, [conf.getList]);
 
   const onDelete = key => {
     setLoading(true);
     client
-      .query({ query: conf.delete, variables: { [conf.keyName]: key } })
+      .mutate({
+        mutation: conf.delete.query,
+        variables: { [conf.keyName || 'id']: key },
+        refetchQueries: [{ query: conf.getList.query }],
+      })
       .then(response => {
         setLoading(false);
+        if (
+          response.data &&
+          response.data[conf.getList.accessData] &&
+          response.data[conf.getList.accessData].id > 0
+        ) {
+          setDataSource(
+            dataSource.filter(
+              d => d.id !== response.data[conf.getList.accessData].id
+            )
+          );
+        }
       })
       .catch(e => {
         setLoading(false);
@@ -225,7 +251,7 @@ export function useCrudForm(conf, key) {
           const { data } = await client.query({
             query: conf.getByKey.query,
             variables: {
-              [conf.keyName || 'key']: key,
+              [conf.keyName || 'id']: key,
             },
           });
           fields.forEach(field => {
@@ -276,14 +302,21 @@ export function useCrudForm(conf, key) {
 
   const onSubmit = values => {
     setLoading(true);
+    const isUpdating =
+      key > 0
+        ? {
+            query: conf.getByKey.query,
+            variables: { [conf.keyName || 'id']: key || undefined },
+          }
+        : undefined;
+
     client
       .mutate({
         mutation: conf.post.query,
-        variables: { ...values, [conf.keyName || 'key']: key || undefined },
-        refetchQueries: [
-          { query: conf.getList.query },
-          { query: conf.getByKey.query },
-        ],
+        variables: { ...values, [conf.keyName || 'id']: key || undefined },
+        refetchQueries: [{ query: conf.getList.query }, isUpdating].filter(
+          Boolean
+        ),
       })
       .then(response => {
         console.log('onSubmitHook', response);

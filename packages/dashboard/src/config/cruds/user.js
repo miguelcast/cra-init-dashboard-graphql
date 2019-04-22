@@ -73,7 +73,16 @@ const user = {
       }
     `,
   },
-  delete: '/deleteUser.json',
+  delete: {
+    accessData: 'deleteUser',
+    query: gql`
+      mutation DeleteUser($id: ID!) {
+        deleteUser(id: $id) {
+          ${fields}
+        }
+      }
+    `,
+  },
   fields: [
     {
       title: 'Name',

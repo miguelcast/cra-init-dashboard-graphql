@@ -5,6 +5,10 @@ type Query {
   users: [User!]! @isAuthenticated
 }
 
+type Mutation {
+  deleteUser(id: ID!): User
+}
+
 type User {
   id: ID!
   name: String!
