@@ -49,6 +49,8 @@ const user = {
         $password: String!
         $age: Int
         $color: String
+        $birthday: String
+        $gender: String
         $country: ID
         $status: Boolean
       ) {
@@ -59,6 +61,8 @@ const user = {
           password: $password
           age: $age
           color: $color
+          birthday: $birthday
+          gender: $gender
           country: $country
           status: $status
         ) {
@@ -175,6 +179,7 @@ const user = {
       },
       disabled: true,
       rules: [{ required: true, message: 'Is required!' }],
+      render: (text, record) => (record.country && record.country.name) || '',
     },
     {
       title: 'Gender',

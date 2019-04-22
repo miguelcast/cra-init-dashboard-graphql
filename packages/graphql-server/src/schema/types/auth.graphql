@@ -12,6 +12,7 @@ type Mutation {
     gender: String,
     address: String,
     color: String,
+    birthday: String,
     country: ID,
     status: Boolean
   ): LoginResponse!

@@ -9,6 +9,7 @@ const List = props => {
   return (
     <ListCrud
       title="Users"
+      rowKey={userConfig.keyName || 'id'}
       columns={columns}
       dataSource={dataSource}
       addButtons={[

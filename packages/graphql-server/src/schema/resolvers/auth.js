@@ -22,6 +22,7 @@ const auth = {
         country,
         gender,
         address,
+        birthday,
         status,
       },
       { prisma }
@@ -35,6 +36,7 @@ const auth = {
         color,
         gender,
         address,
+        birthday,
         status,
         country: {
           connect: {
@@ -45,7 +47,7 @@ const auth = {
 
       const user = await prisma.upsertUser({
         where: {
-          id,
+          id: id || '',
         },
         update: {
           ...dataUser,
@@ -54,8 +56,6 @@ const auth = {
           ...dataUser,
         },
       });
-
-      console.log('console.log', user);
 
       const token = getToken(user);
 
