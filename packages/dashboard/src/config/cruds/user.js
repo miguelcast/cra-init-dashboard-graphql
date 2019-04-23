@@ -163,7 +163,6 @@ const user = {
     {
       title: 'Country async load',
       key: 'country',
-      columnKey: 'countryName',
       sorter: true,
       filter: true,
       type: 'select',

@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import moment from 'moment';
 import client from '../../config/client';
@@ -24,7 +23,7 @@ const resolveRender = field => {
   return field.render;
 };
 
-const FilterIcon = ({ filtered }) => (
+const FilterIcon = filtered => (
   <Icon
     type="search"
     style={{
@@ -33,10 +32,6 @@ const FilterIcon = ({ filtered }) => (
     }}
   />
 );
-
-FilterIcon.propTypes = {
-  filtered: PropTypes.bool,
-};
 
 const resolveFilter = field => {
   if (field.filter === true) {
@@ -49,12 +44,19 @@ const resolveFilter = field => {
           filterDropdown:
             field.type === 'date' ? DateTableFilter : SearchTableFilter,
           filterIcon: FilterIcon,
-          onFilter: (value, record) =>
-            record[field.columnKey || field.key] &&
-            record[field.columnKey || field.key]
+          onFilter: (value, record) => {
+            if (!record[field.columnKey || field.key]) {
+              return false;
+            }
+            const valueForFilter =
+              typeof record[field.columnKey || field.key] === 'object'
+                ? record[field.columnKey || field.key].name
+                : record[field.columnKey || field.key];
+            return valueForFilter
               .toString()
               .toLowerCase()
-              .includes(value.toLowerCase()),
+              .includes(value.toLowerCase());
+          },
         };
       }
       case 'radio': {

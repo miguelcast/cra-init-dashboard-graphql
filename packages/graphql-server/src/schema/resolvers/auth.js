@@ -38,12 +38,15 @@ const auth = {
         address,
         birthday,
         status,
-        country: {
+      };
+
+      if (country) {
+        dataUser.country = {
           connect: {
             id: country,
           },
-        },
-      };
+        };
+      }
 
       const user = await prisma.upsertUser({
         where: {
