@@ -1,6 +1,14 @@
-const { override, addLessLoader, addPostcssPlugins } = require('customize-cra');
+// const path = require('path');
+const {
+  override,
+  addLessLoader,
+  addPostcssPlugins,
+  // babelInclude,
+} = require('customize-cra');
+// const rewireBabelLoader = require('react-app-rewire-babel-loader');
 
 module.exports = override(
+  // babelInclude([path.resolve('../package')]), // if we need a external package
   addLessLoader({
     strictMath: false,
     noIeCompat: true,

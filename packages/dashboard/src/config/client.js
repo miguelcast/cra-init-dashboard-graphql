@@ -8,7 +8,7 @@ import { IS_LOGGED_IN } from '../graphql';
 const store = new InMemoryCache();
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/',
+  uri: process.env.REACT_APP_API || 'http://localhost:4000/',
 });
 
 const authLink = setContext((_, { headers }) => {
