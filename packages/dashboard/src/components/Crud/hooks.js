@@ -166,8 +166,8 @@ export function useCrudList(conf) {
     const subscribed = client
       .watchQuery({ query: conf.getList.query })
       .subscribe({
-        next({ data: { users = [] } }) {
-          setDataSource(users);
+        next({ data }) {
+          setDataSource(data[conf.getList.accessData]);
         },
       });
 
@@ -194,18 +194,10 @@ export function useCrudList(conf) {
         refetchQueries: [{ query: conf.getList.query }],
       })
       .then(response => {
-        setLoading(false);
-        if (
-          response.data &&
-          response.data[conf.getList.accessData] &&
-          response.data[conf.getList.accessData].id > 0
-        ) {
-          setDataSource(
-            dataSource.filter(
-              d => d.id !== response.data[conf.getList.accessData].id
-            )
-          );
+        if (response.data[conf.getList.query.accessData]) {
+          console.log('OK');
         }
+        setLoading(false);
       })
       .catch(e => {
         setLoading(false);
