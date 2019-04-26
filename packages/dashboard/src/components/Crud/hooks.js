@@ -194,7 +194,7 @@ export function useCrudList(conf) {
         refetchQueries: [{ query: conf.getList.query }],
       })
       .then(response => {
-        if (response.data[conf.getList.query.accessData]) {
+        if (response.data[conf.delete.query.accessData]) {
           console.log('OK');
         }
         setLoading(false);
